@@ -1,0 +1,12 @@
+/**
+ * Wrangler config for Cloudflare Pages with Functions
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "wetltransferedtimless",
+	"pages_build_output_dir": "dist/client",
+	"compatibility_date": "2025-01-01",
+	"observability": {
+		"enabled": true
+	}
+}

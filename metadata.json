@@ -1,0 +1,5 @@
+{
+  "name": "WeTransfer Cloudflare Pages",
+  "description": "A WeTransfer clone adapted for Cloudflare Pages hosting architecture with Durable Objects.",
+  "requestFramePermissions": []
+}

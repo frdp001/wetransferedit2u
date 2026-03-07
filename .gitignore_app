@@ -1,0 +1,22 @@
+
+# Bootstrap marker
+.bootstrap-complete
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Build outputs
+dist/
+.wrangler/
+
+# Dependencies
+node_modules/
+
+# Cache files
+.eslintcache
+tsconfig.tsbuildinfo
+
+# Logs
+*.log
