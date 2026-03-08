@@ -8,7 +8,6 @@ import { HeroPreviewCard } from '@/components/HeroPreviewCard';
 import { NavPills } from '@/components/NavPills';
 import { HeroDecorations } from '@/components/HeroDecorations';
 import { cn } from '@/lib/utils';
-import logo from '@/assets/logo.png';
 const heroVariants = [
   {
     headline: "Think about it.",
@@ -74,7 +73,6 @@ export function HomePage() {
   };
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-white font-sans">
-      <img src={logo} alt="App Logo" className="absolute top-4 left-4 sm:top-6 sm:left-6 lg:top-8 lg:left-8 h-14 w-auto z-30 rounded-md hover:scale-105 transition-transform duration-200" />
       <VideoBackground active={currentVariant === 2} />
       <HeroDecorations color={activeVariant.color} />
       <NavPills />
