@@ -107,6 +107,7 @@ export default ({ mode }: { mode: string }) => {
   return defineConfig({
     plugins: [react(), cloudflare(), watchDependenciesPlugin(), reloadTriggerPlugin()],
     build: {
+      outDir: "dist",
       minify: true,
       sourcemap: "inline", // Use inline source maps for better error reporting
       rollupOptions: {
