@@ -1,6 +1,3 @@
-/**
- * Wrangler config for Cloudflare Pages with Functions
- */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "wetltransferedtimless",
