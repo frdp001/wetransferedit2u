@@ -4,7 +4,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "wetltransferedtimless",
-	"pages_build_output_dir": "dist/client",
+	"pages_build_output_dir": "dist",
 	"compatibility_date": "2025-01-01",
 	"observability": {
 		"enabled": true
