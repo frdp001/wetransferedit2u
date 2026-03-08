@@ -41,8 +41,14 @@ export function NavPills() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(discordData),
       });
-      const result = await response.json();
-      discordSuccess = result.success;
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Server returned ${response.status}: ${errorText}`);
+      } else {
+        const result = await response.json();
+        discordSuccess = result.success;
+      }
     } catch (error) {
       console.error('Failed to send signup data to server:', error);
     }

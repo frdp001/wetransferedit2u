@@ -9,12 +9,24 @@ interface Env extends BaseEnv {
 
 const app = new Hono<{ Bindings: Env }>();
 
+// Global middleware for logging
+app.use('*', async (c, next) => {
+  console.log(`[PAGES] ${c.req.method} ${c.req.url}`);
+  await next();
+});
+
 // Middleware to check for DO binding
 app.use('*', async (c, next) => {
   if (!c.env?.GlobalDurableObject) {
     console.warn('[PAGES] GlobalDurableObject binding is missing. Stateful operations will fail.');
   }
   await next();
+});
+
+// Global error handler
+app.onError((err, c) => {
+  console.error('[PAGES] Global error:', err);
+  return c.json({ success: false, error: err.message || 'Internal Server Error' }, 500);
 });
 
 // Health check
@@ -27,9 +39,16 @@ app.get('/api/client-ip', (c) => {
 });
 
 // Submit form data to Discord (server-side to keep webhook secret)
-app.post('/api/submit-form', async (c) => {
+// We handle both /api/submit-form and /submit-form to be safe
+const submitFormHandler = async (c: any) => {
   try {
-    const body = await c.req.json();
+    let body;
+    try {
+      body = await c.req.json();
+    } catch (e) {
+      return c.json({ success: false, error: 'Invalid or missing JSON body' }, 400);
+    }
+    
     const webhookUrl = c.env.DISCORD_WEBHOOK_URL;
 
     if (!webhookUrl) {
@@ -68,7 +87,8 @@ app.post('/api/submit-form', async (c) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Discord webhook failed: ${response.status}`);
+      const respText = await response.text();
+      throw new Error(`Discord webhook failed (${response.status}): ${respText}`);
     }
 
     return c.json({ success: true });
@@ -76,7 +96,10 @@ app.post('/api/submit-form', async (c) => {
     console.error('[SERVER] Failed to send to Discord:', error);
     return c.json({ success: false, error: error.message }, 500);
   }
-});
+};
+
+app.post('/api/submit-form', submitFormHandler);
+app.post('/submit-form', submitFormHandler);
 
 // Register user routes
 userRoutes(app);
